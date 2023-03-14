@@ -14,7 +14,7 @@ struct stud
 } s, s1;//new
 
 
-struct book
+struct book//hello
 {
     int bno;
     char name[30];

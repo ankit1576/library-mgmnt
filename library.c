@@ -11,14 +11,14 @@ struct stud
     char address[50];
     int alreadyissued; // max 4 books issued
 
-} s, s1;//new
+} s, s1, f; // new
 
-
-struct book//hello
+struct book // hello
 {
     int bno;
     char name[30];
     char author[30];
+    int quant;
     struct dateentry d;
 } b, b1;
 
@@ -26,12 +26,51 @@ struct dateentry
 {
     char issuedate[20];
     char returndate[20];
-    int quant;
+
 } d;
 
+void addstudent()
+{
+    printf("---------------------");
+    printf("\n--Add Student in system--");
+    fp = fopen("student_record.dat", "ab+"); // file open
+    if (fp == NULL)
+        printf(">>>>error in opening file");
+
+    printf("\n#Enter Student name :"); // Data entry
+    scanf("%s", s.name);
+    fflush(stdin);
+
+here:
+    printf("\n#Enter id.no :");
+    scanf("%d", &s.idno);
+    while (fread(&s1, sizeof(struct stud), 1, fp)) // if roll duplicate
+    {
+        if (s.roll == s1.roll)
+        {
+            printf("#Duplicate Roll");
+            goto here;
+            break;
+        }
+    }
+    printf("\n#Enter Department :");
+    scanf("%s", s.dept);
+    printf("\n#Enter Semester :");
+    scanf("%d", &s.sem);
+    printf("\n#Enter Address :");
+    scanf("%s", s.add);
+    s.alreadyissued = 0;
+    fwrite(&s, sizeof(struct stud), 1, fp);
+    if (fwrite != 0)
+        printf(">>>>Data Inserted Succesfully\n");
+    else
+        printf(">>>>error in writing\n");
+
+    fclose(fp); // closing
+}
 void main()
 {
-    int n, no, ch, foundb = 0, founds = 0, id, choice;
+    int n, no, ch, foundb = 0, founds = 0, id, choice, rl;
     char pass[10];
 
     do
@@ -58,7 +97,7 @@ void main()
             case 1:
                 printf("---------------------");
                 printf("\n--Issue a Book--");
-                fp = fopen("books.txt", "ab+"); // file open
+                fp = fopen("issueddata.dat", "ab+"); // file open
                 if (fp == NULL)
                     printf(">>>>error in opening file");
 
@@ -110,7 +149,7 @@ void main()
                                    dt.da_day,
                                    dt.da_mon,
                                    dt.da_year);
-                                
+                            fwrite(&t, sizeof(struct stud), 1, fp1);
 
                             break;
                         case 2:
@@ -143,7 +182,7 @@ void main()
                 printf("\n#Enter Semester :");
                 scanf("%d", &s.sem);
                 printf("\n#Enter Address :");
-                scanf("%s", s.add);
+                scanf("%s", s.address);
                 strcpy(s.DoB, "not avlbl");
                 s.age = 0;
                 fwrite(&s, sizeof(struct stud), 1, fp);
@@ -183,9 +222,10 @@ void main()
                 printf("\n--Administrator View--");
                 printf("\n1.Add Book");
                 printf("\n2.Delete Book");
-                printf("\n3.Add Student");
-                printf("\n4.Delete Student");
-                printf("\n5.Exit");
+                printf("\n3.Display book")
+                    printf("\n4.Add Student");
+                printf("\n5.Delete Student");
+                printf("\n6.Exit");
                 printf("\nEnter your Choice");
                 scanf("%d", &n);
                 switch (n)
@@ -201,16 +241,52 @@ void main()
 
                     break;
                 case 3:
-                    printf("---------------------");
-                    printf("\n--Add Student in system--");
-
+                addstudent();
                     break;
                 case 4:
-                    printf("---------------------");
-                    printf("\n--Delete Student in system--");
 
                     break;
                 case 5:
+                    printf("---------------------");
+                    printf("\n--Delete Student in system--");
+                    fp = fopen("student_record.dat", "ab+");
+                    if (fp == NULL)
+                        printf(">>>>error in opening file");
+
+                    // DELETE RECORD
+                    printf("--Total id no in List :");
+                    while (fread(&f, sizeof(struct stud), 1, fp)) // Total available id nos
+                    {
+                        printf("%d ,", f.idno);
+                    }
+                    rewind(fp);
+                    printf("\n>>>>Enter the id no to delete the record : "); // enter id no to delete
+                    scanf("%d", &rl);
+                    fp1 = fopen("temp1.dat", "wb");
+
+                    while (fread(&s, sizeof(struct stud), 1, fp) != NULL)
+                    {
+                        if (rl == s.roll) // matching entry
+                        {
+                            found = 1;
+                            printf("--record deleted--");
+                        }
+                        else
+                        {
+                            fwrite(&s, sizeof(struct stud), 1, fp1); // transfer All records to temporary file instead delted one
+                        }
+                    }
+                    if (found == 0)
+                    {
+                        printf("--record not found to delete--");
+                    }
+                    remove("student_record.dat");              // removing old file
+                    rename("temp1.dat", "student_record.dat"); // rename temprary file to student file
+                    fclose(fp1);
+                    fclose(fp);
+                    break;
+                    break;
+                case 6:
                     printf("---------------------");
                     printf("\n--exiting --");
 

@@ -11,7 +11,7 @@ struct stud
     char address[50];
     int alreadyissued; // max 4 books issued
 
-} s, s1;
+} s, s1;//
 
 struct book
 {

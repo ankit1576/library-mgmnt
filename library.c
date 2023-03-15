@@ -1,6 +1,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
+
+int n, no, ch, foundb = 0, founds = 0, id, choice, rl, search;
+char pass[10];
+FILE *fp, *fp1, *fp2;
 
 struct stud
 {
@@ -19,15 +24,255 @@ struct book // hello
     char name[30];
     char author[30];
     int quant;
-    struct dateentry d;
-} b, b1;
+
+} b, b1, b2, b3;
 
 struct dateentry
 {
     char issuedate[20];
     char returndate[20];
+};
 
-} d;
+void stuPortal();
+void adminPortal();
+void addstudent();
+void deletestud();
+
+void main()
+{
+
+    do
+    {
+        printf("__Welcome to Library_");
+        printf("\n1.Student Portal");
+        printf("\n2.Admin Portal");
+        printf("\n3.Exit");
+        printf("\nEnter your Choice : ");
+        scanf("%d", &n);
+
+        switch (n)
+        {
+        case 1:
+            stuPortal();
+            break;
+
+        case 2:
+            adminPortal();
+            break;
+
+        case 3:
+            exit(0);
+            break;
+
+        default:
+            printf("Wrong Choice!!!");
+        }
+        printf("\nDo you want to Continue (Press 1)");
+        scanf("%d", &ch);
+    } while (ch == 1);
+}
+
+void stuPortal()
+{
+
+    printf("\n--Student Services--");
+    printf("\n1.Isuue a Book");
+    printf("\n2.Return a Book");
+    printf("\n3.Search for Book");
+    printf("\n4.Exit");
+    printf("\nEnter your Choice : ");
+    scanf("%d", &n);
+    switch (n)
+    {
+    case 1:
+        printf("---------------------");
+        printf("\n--Issue a Book--");
+        time_t t = time(NULL);
+        struct tm tm = *localtime(&t);
+
+        fp = fopen("issueddata.dat", "ab+"); // file open
+        if (fp == NULL)
+            printf(">>>>error in opening file");
+
+        printf("\n#Enter Book number :"); // Data entry
+        scanf("%s", &no);
+        while (fread(&b1, sizeof(struct book), 1, fp)) // if quantity of book is 0
+        {
+            if (no == b1.bno)
+            {
+                foundb = 1;
+                if (b1.quant == 0)
+                {
+                    printf("#No Books available");
+                }
+                else
+                {
+                    b1.quant = b1.quant - 1;
+                }
+                break;
+            }
+        }
+
+        if (foundb == 0)
+        {
+            printf("--book not found to issue--");
+        }
+        else
+        {
+            printf("\n#Enter Student idno :");
+            scanf("%s", id);
+            while (fread(&s1, sizeof(struct stud), 1, fp)) // check student exist
+            {
+                if (id == s1.idno)
+                {
+                    founds = 1;
+                here:
+                    printf("\n1.Issue date today  ");
+                    printf("\n2.Issue date mannually enter");
+                    printf("\n enter you preference");
+                    scanf("%d", &choice);
+                    switch (choice)
+                    {
+                    case 1:
+                        printf("Date and time of book issued : %d-%02d-%02d %02d:%02d:%02d\n", tm.tm_mday, tm.tm_mon + 1, tm.tm_year + 1900, tm.tm_hour, tm.tm_min, tm.tm_sec);
+                        fwrite(&tm, sizeof(struct stud), 1, fp1);
+                        break;
+                    case 2:
+
+                        break;
+                    default:
+                        printf("incorrect choice");
+                        goto here;
+                    }
+                    fwrite(&t, sizeof(struct stud), 1, fp2);
+                    break;
+                }
+            }
+            if (founds == 0)
+            {
+                printf("Invalid student  id no");
+            }
+
+            printf("\n#Enter Semester :");
+            scanf("%d", &s.sem);
+            printf("\n#Enter Address :");
+            scanf("%s", s.address);
+
+            fwrite(&s, sizeof(struct stud), 1, fp);
+            if (fwrite != 0)
+                printf(">>>>Data Inserted Succesfully\n");
+            else
+                printf(">>>>error in writing\n");
+
+            fclose(fp); // closing
+        }
+        break;
+    case 2:
+        printf("---------------------");
+        printf("\n--Return a Book--");
+
+        break;
+    case 3:
+        printf("---------------------");
+        printf("\n--Search for a Book--");
+        printf("Enter the idno to search for a book");
+        scanf("%d", &search);
+        foundb = 0;
+        while (fread(&b2, sizeof(struct book), 1, fp)) // if quantity of book is 0
+        {
+            if (search == b2.bno)
+            {
+                foundb = 1;
+                if (b2.quant == 0)
+                {
+                    printf("#No Books available");
+                }
+                break;
+            }
+        }
+
+        if (foundb == 0)
+        {
+            printf("--book not found to issue--");
+        }
+        break;
+
+    case 4:
+        printf("---------------------");
+        printf("\n--exiting --");
+        exit(0);
+        break;
+
+    default:
+        printf("\nWrong Choice!!!");
+    }
+}
+
+void adminPortal()
+{
+    printf("Enter Password to enter as Admin(root):");
+    scanf("%s", pass);
+    if (strcmp(pass, "Tata@123") == 0)
+    {
+        printf("\n--Administrator View--");
+        printf("\n1.Add Book");
+        printf("\n2.Delete Book");
+        printf("\n3.Display book");
+        printf("\n4.Add Student");
+        printf("\n5.Delete Student");
+        printf("\n6.Exit");
+        printf("\nEnter your Choice");
+        scanf("%d", &n);
+        switch (n)
+        {
+        case 1:
+            printf("---------------------");
+            printf("\n--Add a Book--");
+            fp = fopen("book.dat", "ab+");
+            printf("enter the book no");
+            scanf("%d", &b3.bno);
+            printf("enter book name");
+            scanf("%s", b3.name);
+            printf("enter the author name");
+            scanf("%s", b3.author);
+            printf("enter the quantity");
+            scanf("%d", &b3.quant);
+            fwrite(&b3, sizeof(struct book), 1, fp);
+            if (fwrite != 0)
+                printf(">>>>Data Inserted Succesfully\n");
+            else
+                printf(">>>>error in writing\n");
+
+            break;
+        case 2:
+            printf("---------------------");
+            printf("\n--Delete a Book--");
+            printf("enter the book no to delete a book");
+            scanf("%d", &b3.bno);
+
+            break;
+        case 3:
+            break;
+
+        case 4:
+            addstudent();
+            break;
+
+        case 5:
+            deletestud();
+            break;
+
+        case 6:
+            printf("---------------------");
+            printf("\n--exiting --");
+            exit(0);
+            break;
+
+        default:
+            printf("Wrong Choice!!!");
+        }
+    }
+}
 
 void addstudent()
 {
@@ -46,9 +291,9 @@ here:
     scanf("%d", &s.idno);
     while (fread(&s1, sizeof(struct stud), 1, fp)) // if roll duplicate
     {
-        if (s.roll == s1.roll)
+        if (s.idno == s1.idno)
         {
-            printf("#Duplicate Roll");
+            printf("#Duplicate Id Number");
             goto here;
             break;
         }
@@ -58,7 +303,7 @@ here:
     printf("\n#Enter Semester :");
     scanf("%d", &s.sem);
     printf("\n#Enter Address :");
-    scanf("%s", s.add);
+    scanf("%s", s.address);
     s.alreadyissued = 0;
     fwrite(&s, sizeof(struct stud), 1, fp);
     if (fwrite != 0)
@@ -68,241 +313,45 @@ here:
 
     fclose(fp); // closing
 }
-void main()
+
+void deletestud()
 {
-    int n, no, ch, foundb = 0, founds = 0, id, choice, rl;
-    char pass[10];
+    printf("---------------------");
+    printf("\n--Delete Student in system--");
+    founds==0;
+    fp = fopen("student_record.dat", "ab+");
+    if (fp == NULL)
+        printf(">>>>error in opening file");
 
-    do
+    // DELETE RECORD
+    printf("--Total id no in List :");
+    while (fread(&f, sizeof(struct stud), 1, fp)) // Total available id nos
     {
-        printf("____________Welcome to Library_____________");
-        printf("\n1.Student Portal");
-        printf("\n2.Admin Portal");
-        printf("\n3.Exit");
-        printf("\nEnter your Choice : ");
-        scanf("%d", &n);
+        printf("%d ,", f.idno);
+    }
+    rewind(fp);
+    printf("\n>>>>Enter the id no to delete the record : "); // enter id no to delete
+    scanf("%d", &rl);
+    fp1 = fopen("temp1.dat", "wb");
 
-        switch (n)
+    while (fread(&s, sizeof(struct stud), 1, fp))
+    {
+        if (rl == s.idno) // matching entry
         {
-        case 1:
-            printf("\n--Student Services--");
-            printf("\n1.Isuue a Book");
-            printf("\n2.Return a Book");
-            printf("\n3.Search for Book");
-            printf("\n4.Exit");
-            printf("\nEnter your Choice : ");
-            scanf("%d", &n);
-            switch (n)
-            {
-            case 1:
-                printf("---------------------");
-                printf("\n--Issue a Book--");
-                fp = fopen("issueddata.dat", "ab+"); // file open
-                if (fp == NULL)
-                    printf(">>>>error in opening file");
-
-                printf("\n#Enter Book number :"); // Data entry
-                scanf("%s", &no);
-                while (fread(&b1, sizeof(struct book), 1, fp)) // if quantity of book is 0
-                {
-                    if (no == b1.bno)
-                    {
-                        foundb = 1;
-                        if (b1.quant == 0)
-                        {
-                            printf("#No Books available");
-                        }
-                        else
-                        {
-                            b1.quant = b1.quant - 1;
-                        }
-                        break;
-                    }
-                }
-
-                if (foundb == 0)
-                {
-                    printf("--book not found to issue--");
-                }
-                printf("\n#Enter Student idno :");
-                scanf("%s", id);
-                while (fread(&s1, sizeof(struct stud), 1, fp)) // check student exist
-                {
-                    if (id == s1.idno)
-                    {
-                        founds = 1;
-                    here:
-                        printf("\n1.Issue date today  ");
-                        printf("\n2.Issue date mannually enter");
-                        printf("\n enter you preference");
-                        scanf("%d", &choice);
-                        switch (choice)
-                        {
-                        case 1:
-                            struct date dt;
-
-                            // This function is used to get
-                            // system's current date
-                            getdate(&dt);
-                            printf("Issued date\n");
-                            printf("%d/%d/%d",
-                                   dt.da_day,
-                                   dt.da_mon,
-                                   dt.da_year);
-                            fwrite(&t, sizeof(struct stud), 1, fp1);
-
-                            break;
-                        case 2:
-
-                            break;
-                        default:
-                            printf("incorrect choice");
-                            goto here;
-                        }
-
-                        scanf("%s", t.DoB);
-                        struct date dt;
-
-                        // This function is used to get
-                        // system's current date
-                        getdate(&dt);
-
-                        printf("System's current date\n");
-                        printf("%d/%d/%d",
-                               dt.da_day,
-                               dt.da_mon,
-                               dt.da_year);
-
-                        t.age = agec(t.DoB);
-                        fwrite(&t, sizeof(struct stud), 1, fp2);
-                        break;
-                    }
-                }
-
-                printf("\n#Enter Semester :");
-                scanf("%d", &s.sem);
-                printf("\n#Enter Address :");
-                scanf("%s", s.address);
-                strcpy(s.DoB, "not avlbl");
-                s.age = 0;
-                fwrite(&s, sizeof(struct stud), 1, fp);
-                if (fwrite != 0)
-                    printf(">>>>Data Inserted Succesfully\n");
-                else
-                    printf(">>>>error in writing\n");
-
-                fclose(fp); // closing
-
-                break;
-            case 2:
-                printf("---------------------");
-                printf("\n--Return a Book--");
-
-                break;
-            case 3:
-                printf("---------------------");
-                printf("\n--Search for a Book--");
-
-                break;
-            case 4:
-                printf("---------------------");
-                printf("\n--exiting --");
-                exit(0);
-
-            default:
-                printf("\nWrong Choice!!!");
-            }
-            break;
-        case 2:
-
-            printf("Enter Password to enter as Admin(root):");
-            scanf("%s", pass);
-            if (strcmp(pass, "Tata@123") == 0)
-            {
-                printf("\n--Administrator View--");
-                printf("\n1.Add Book");
-                printf("\n2.Delete Book");
-                printf("\n3.Display book")
-                    printf("\n4.Add Student");
-                printf("\n5.Delete Student");
-                printf("\n6.Exit");
-                printf("\nEnter your Choice");
-                scanf("%d", &n);
-                switch (n)
-                {
-                case 1:
-                    printf("---------------------");
-                    printf("\n--Add a Book--");
-
-                    break;
-                case 2:
-                    printf("---------------------");
-                    printf("\n--Delete a Book--");
-
-                    break;
-                case 3:
-                addstudent();
-                    break;
-                case 4:
-
-                    break;
-                case 5:
-                    printf("---------------------");
-                    printf("\n--Delete Student in system--");
-                    fp = fopen("student_record.dat", "ab+");
-                    if (fp == NULL)
-                        printf(">>>>error in opening file");
-
-                    // DELETE RECORD
-                    printf("--Total id no in List :");
-                    while (fread(&f, sizeof(struct stud), 1, fp)) // Total available id nos
-                    {
-                        printf("%d ,", f.idno);
-                    }
-                    rewind(fp);
-                    printf("\n>>>>Enter the id no to delete the record : "); // enter id no to delete
-                    scanf("%d", &rl);
-                    fp1 = fopen("temp1.dat", "wb");
-
-                    while (fread(&s, sizeof(struct stud), 1, fp) != NULL)
-                    {
-                        if (rl == s.roll) // matching entry
-                        {
-                            found = 1;
-                            printf("--record deleted--");
-                        }
-                        else
-                        {
-                            fwrite(&s, sizeof(struct stud), 1, fp1); // transfer All records to temporary file instead delted one
-                        }
-                    }
-                    if (found == 0)
-                    {
-                        printf("--record not found to delete--");
-                    }
-                    remove("student_record.dat");              // removing old file
-                    rename("temp1.dat", "student_record.dat"); // rename temprary file to student file
-                    fclose(fp1);
-                    fclose(fp);
-                    break;
-                    break;
-                case 6:
-                    printf("---------------------");
-                    printf("\n--exiting --");
-
-                    exit(0);
-                    break;
-                default:
-                    printf("Wrong Choice!!!");
-                }
-            }
-            break;
-        case 3:
-            exit(0);
-        default:
-            printf("Wrong Choice!!!");
+            founds = 1;
+            printf("--record deleted--");
         }
-        printf("\nDo you want to Continue (Press 1)");
-        scanf("%d", &ch);
-    } while (ch == 1);
+        else
+        {
+            fwrite(&s, sizeof(struct stud), 1, fp1); // transfer All records to temporary file instead delted one
+        }
+    }
+    if (founds == 0)
+    {
+        printf("--record not found to delete--");
+    }
+    remove("student_record.dat");              // removing old file
+    rename("temp1.dat", "student_record.dat"); // rename temprary file to student file
+    fclose(fp1);
+    fclose(fp);
 }

@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-int n, no, ch, foundb = 0, founds = 0, id, choice, rl, search;
+int n, no, ch, foundb = 0, founds = 0, id, choice, rl, search, sr, disp;
 char pass[10];
 FILE *fp, *fp1, *fp2;
 
@@ -24,8 +24,10 @@ struct book // hello
     char name[30];
     char author[30];
     int quant;
+    int cost;
+    char status[20];
 
-} b, b1, b2, b3;
+} b, b1, b2, b3, f1, u,b4;
 
 struct dateentry
 {
@@ -37,6 +39,8 @@ void stuPortal();
 void adminPortal();
 void addstudent();
 void deletestud();
+void addbook();
+void displaybook();
 
 void main()
 {
@@ -226,23 +230,7 @@ void adminPortal()
         switch (n)
         {
         case 1:
-            printf("---------------------");
-            printf("\n--Add a Book--");
-            fp = fopen("book.dat", "ab+");
-            printf("enter the book no");
-            scanf("%d", &b3.bno);
-            printf("enter book name");
-            scanf("%s", b3.name);
-            printf("enter the author name");
-            scanf("%s", b3.author);
-            printf("enter the quantity");
-            scanf("%d", &b3.quant);
-            fwrite(&b3, sizeof(struct book), 1, fp);
-            if (fwrite != 0)
-                printf(">>>>Data Inserted Succesfully\n");
-            else
-                printf(">>>>error in writing\n");
-
+            addbook();
             break;
         case 2:
             printf("---------------------");
@@ -252,6 +240,7 @@ void adminPortal()
 
             break;
         case 3:
+            displaybook();
             break;
 
         case 4:
@@ -271,6 +260,10 @@ void adminPortal()
         default:
             printf("Wrong Choice!!!");
         }
+    }
+    else
+    {
+        printf("wrong password ");
     }
 }
 
@@ -318,7 +311,7 @@ void deletestud()
 {
     printf("---------------------");
     printf("\n--Delete Student in system--");
-    founds==0;
+    founds == 0;
     fp = fopen("student_record.dat", "ab+");
     if (fp == NULL)
         printf(">>>>error in opening file");
@@ -353,5 +346,83 @@ void deletestud()
     remove("student_record.dat");              // removing old file
     rename("temp1.dat", "student_record.dat"); // rename temprary file to student file
     fclose(fp1);
+    fclose(fp);
+}
+void addbook()
+{
+    printf("---------------------");
+    printf("\n--Add a Book--");
+    fp = fopen("book.dat", "ab+");
+    her :
+    printf("\nenter the book no :");
+    scanf("%d", &b3.bno);
+    rewind(fp);
+    while (fread(&b4, sizeof(struct stud), 1, fp)) // if roll duplicate
+    {
+        if (b3.bno == b4.bno)
+        {
+            printf("#Duplicate book Number");
+            goto her;
+            break;
+        }
+    }
+    printf("\nenter book name :");
+    scanf("%s", b3.name);
+    printf("\nenter the author name :");
+    scanf("%s", b3.author);
+    printf("enter the cost of book");
+    scanf("%d", &b3.cost);
+    printf("\nenter the quantity");
+    scanf("%d", &b3.quant);
+    strcpy(b3.status, "not issued");
+
+    fwrite(&b3, sizeof(struct book), 1, fp);
+    if (fwrite != 0)
+        printf(">>>>Book Inserted Succesfully\n");
+    else
+        printf(">>>>error in inserting book\n");
+
+    fclose(fp);
+
+}
+
+void displaybook()
+{
+    fp = fopen("book.dat", "rb+");
+    if (fp == NULL)
+        printf("error in opening file"); // DISPLAY RECORD
+
+    disp = 0;
+    printf("--Total book no in List :");
+    while (fread(&f1, sizeof(struct book), 1, fp))
+    {
+        printf("%d ,", f1.bno);
+    }
+    rewind(fp);
+    printf("\n>>>>Enter the book.no to Display the book details : ");
+    scanf("%d", &sr);
+
+    while (fread(&u, sizeof(struct stud), 1, fp))
+    {
+        if (u.bno == sr)
+        {
+            disp = 1;
+            break;
+        }
+    }
+    if (disp == 1)
+    {
+        printf("\n  --Book Details--    ");
+        printf("\n# Book name    : %s", u.name);
+        printf("\n# Book no      : %d", u.bno);
+        printf("\n# Author       : %s", u.author);
+        printf("\n# quantiy      : %d", u.quant);
+        printf("\n# price        : %d", u.cost);
+        printf("\n# status       : %s", u.status);
+    }
+    else
+    {
+        printf(">>>>No matching BOOK no\n");
+    }
     fclose(fp);
 }

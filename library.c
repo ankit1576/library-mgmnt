@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-int n, no, ch, foundb = 0, founds = 0, id, choice, rl, search, sr, disp;
+int n, no, ch, foundb = 0, founds = 0, id, choice, rl, search, sr, disp, bno;
 char pass[10];
 FILE *fp, *fp1, *fp2;
 
@@ -27,7 +27,7 @@ struct book // hello
     int cost;
     char status[20];
 
-} b, b1, b2, b3, f1, u,b4;
+} b, b1, b2, b3, f1, u, b4, ff;
 
 struct dateentry
 {
@@ -41,11 +41,12 @@ void addstudent();
 void deletestud();
 void addbook();
 void displaybook();
+void deletebook();
 
 void main()
 {
 
-    do
+    while (1)
     {
         printf("__Welcome to Library_");
         printf("\n1.Student Portal");
@@ -71,9 +72,7 @@ void main()
         default:
             printf("Wrong Choice!!!");
         }
-        printf("\nDo you want to Continue (Press 1)");
-        scanf("%d", &ch);
-    } while (ch == 1);
+    }
 }
 
 void stuPortal()
@@ -99,7 +98,7 @@ void stuPortal()
             printf(">>>>error in opening file");
 
         printf("\n#Enter Book number :"); // Data entry
-        scanf("%s", &no);
+        scanf("%d", &no);
         while (fread(&b1, sizeof(struct book), 1, fp)) // if quantity of book is 0
         {
             if (no == b1.bno)
@@ -124,7 +123,7 @@ void stuPortal()
         else
         {
             printf("\n#Enter Student idno :");
-            scanf("%s", id);
+            scanf("%d", &id);
             while (fread(&s1, sizeof(struct stud), 1, fp)) // check student exist
             {
                 if (id == s1.idno)
@@ -233,11 +232,7 @@ void adminPortal()
             addbook();
             break;
         case 2:
-            printf("---------------------");
-            printf("\n--Delete a Book--");
-            printf("enter the book no to delete a book");
-            scanf("%d", &b3.bno);
-
+            deletebook();
             break;
         case 3:
             displaybook();
@@ -282,6 +277,7 @@ void addstudent()
 here:
     printf("\n#Enter id.no :");
     scanf("%d", &s.idno);
+    rewind(fp);
     while (fread(&s1, sizeof(struct stud), 1, fp)) // if roll duplicate
     {
         if (s.idno == s1.idno)
@@ -353,7 +349,7 @@ void addbook()
     printf("---------------------");
     printf("\n--Add a Book--");
     fp = fopen("book.dat", "ab+");
-    her :
+her:
     printf("\nenter the book no :");
     scanf("%d", &b3.bno);
     rewind(fp);
@@ -383,7 +379,6 @@ void addbook()
         printf(">>>>error in inserting book\n");
 
     fclose(fp);
-
 }
 
 void displaybook()
@@ -424,5 +419,49 @@ void displaybook()
     {
         printf(">>>>No matching BOOK no\n");
     }
+    fclose(fp);
+}
+
+void deletebook()
+{
+    printf("---------------------");
+    printf("\n--Delete a Book--");
+    printf("enter the book no to delete a book");
+    scanf("%d", &bno);
+    founds == 0;
+    fp = fopen("book.dat", "ab+");
+    if (fp == NULL)
+        printf(">>>>error in opening file");
+
+    // DELETE RECORD
+    printf("--Total book no in List :");
+    while (fread(&ff, sizeof(struct book), 1, fp)) // Total available id nos
+    {
+        printf("%d ,", ff.bno);
+    }
+    rewind(fp);
+    printf("\n>>>>Enter the book no to delete the book details : "); // enter id no to delete
+    scanf("%d", &rl);
+    fp1 = fopen("temp1.dat", "wb");
+
+    while (fread(&ff, sizeof(struct book), 1, fp))
+    {
+        if (rl == ff.bno) // matching entry
+        {
+            founds = 1;
+            printf("--record deleted--");
+        }
+        else
+        {
+            fwrite(&ff, sizeof(struct book), 1, fp1); // transfer All records to temporary file instead delted one
+        }
+    }
+    if (founds == 0)
+    {
+        printf("--record not found to delete--");
+    }
+    remove("book.dat");              // removing old file
+    rename("temp1.dat", "book.dat"); // rename temprary file to student file
+    fclose(fp1);
     fclose(fp);
 }

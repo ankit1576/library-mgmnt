@@ -16,7 +16,7 @@ struct stud
     char address[50];
     int alreadyissued; // max 4 books issued
 
-} s, s1, f; // new
+} s, s1, f,u1; // new
 
 struct book // hello
 {
@@ -39,6 +39,7 @@ void stuPortal();
 void adminPortal();
 void addstudent();
 void deletestud();
+void displaystud();
 void addbook();
 void displaybook();
 void deletebook();
@@ -123,7 +124,8 @@ void adminPortal()
         printf("\n3.Display book");
         printf("\n4.Add Student");
         printf("\n5.Delete Student");
-        printf("\n6.Exit");
+        printf("\n6.Display Student");
+        printf("\n7.Exit");
         printf("\nEnter your Choice");
         scanf("%d", &n);
         switch (n)
@@ -145,8 +147,10 @@ void adminPortal()
         case 5:
             deletestud();
             break;
-
         case 6:
+            displaystud();
+            break;
+        case 7:
             end();
             break;
 
@@ -486,4 +490,46 @@ void end()
     printf("---------------------");
     printf("\n--exiting --");
     exit(0);
+}
+
+void displaystud()
+{
+    fp = fopen("student_record.dat", "rb+");
+    if (fp == NULL)
+        printf("error in opening file"); // DISPLAY RECORD
+
+    disp = 0;
+    printf("--Total id no in List :");
+    while (fread(&f, sizeof(struct stud), 1, fp))
+    {
+        printf("%d ,", f.idno);
+    }
+    rewind(fp);
+    printf("\n>>>>Enter the id.no to Display the record : ");
+    scanf("%d", &sr);
+
+    while (fread(&u1, sizeof(struct stud), 1, fp))
+    {
+        if (u1.idno == sr)
+        {
+            disp = 1;
+            break;
+        }
+    }
+    if (disp == 1)
+    {
+        printf("\n  --Student Details--    ");
+        printf("\n# Student name       : %s", u1.name);
+        printf("\n# Roll no            : %d", u1.idno);
+        printf("\n# Deptartment        : %s", u1.dept);
+        printf("\n# Semester           : %d", u1.sem);
+        printf("\n# Address            : %s", u1.address);
+        printf("\n# No of book issued  : %s", u1.alreadyissued);
+        
+    }
+    else
+    {
+        printf(">>>>No matching record\n");
+    }
+    fclose(fp);
 }

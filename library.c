@@ -4,7 +4,7 @@
 #include <windows.h>
 
 int n, no, ch, foundb = 0, founds = 0, id, choice, rl, search, sr, disp, bno;
-char pass[10];
+char pass[10], sea[30];
 FILE *fp, *fp1, *fp2;
 
 struct stud
@@ -25,7 +25,7 @@ struct book // hello
     char author[30];
     int quant;
     int cost;
-    char status[20];
+    // char status[20];
 
 } b, b1, b2, b3, f1, u, b4, ff;
 
@@ -47,17 +47,17 @@ void deletebook();
 void issue();
 void retur();
 void searc();
+void searchbybookname();
+void searchbyauthorname();
+void searchbybookno();
 void end();
-
-
-
 
 void main()
 {
     int x;
     while (1)
     {
-        printf("__Welcome to Library_");
+        printf("\n__Welcome to Library_");
         printf("\n1.Student Portal");
         printf("\n2.Admin Portal");
         printf("\n3.Exit");
@@ -120,9 +120,9 @@ void stuPortal()
 
 int adminPortal()
 {
-    //printf("Enter Password to enter as Admin(root):");
-    //scanf("%s", pass);
-    //strcmp(pass, "Tata@123" == 0)
+    // printf("Enter Password to enter as Admin(root):");
+    // scanf("%s", pass);
+    // strcmp(pass, "Tata@123" == 0)
     if (1)
     {
         while (1)
@@ -283,7 +283,7 @@ her:
     scanf("%d", &b3.cost);
     printf("\nenter the quantity");
     scanf("%d", &b3.quant);
-    strcpy(b3.status, "not issued");
+    // strcpy(b3.status, "not issued");
 
     fwrite(&b3, sizeof(struct book), 1, fp);
     if (fwrite != 0)
@@ -327,7 +327,7 @@ void displaybook()
         printf("\n# Author       : %s", u.author);
         printf("\n# quantiy      : %d", u.quant);
         printf("\n# price        : %d", u.cost);
-        printf("\n# status       : %s", u.status);
+        // printf("\n# status       : %s", u.status);
     }
     else
     {
@@ -518,16 +518,16 @@ void retur()
     }
     fclose(fp);
     fclose(fp3);
-    remove("issueddata.dat");              // removing old file
+    remove("issueddata.dat");             // removing old file
     rename("temp.dat", "issueddata.dat"); // rename temprary file to student file
 
     // updating student record
     while (fread(&s, sizeof(struct stud), 1, fp2))
     {
-        if(s.idno == sr)
+        if (s.idno == sr)
             break;
     }
-    if(s.alreadyissued <= 0)
+    if (s.alreadyissued <= 0)
     {
         printf("\n------Student doesn't have Issued any Book!-----\n");
         return;
@@ -537,16 +537,16 @@ void retur()
     fwrite(&s, sizeof(struct stud), 1, fp2);
 
     // updating book record
-    while(fread(&b,sizeof(struct book),1,fp1))
+    while (fread(&b, sizeof(struct book), 1, fp1))
     {
-        if(b.bno == no)
-        break;
+        if (b.bno == no)
+            break;
     }
     b.quant++;
     fseek(fp1, -1 * sizeof(struct book), SEEK_CUR);
     fwrite(&b, sizeof(struct book), 1, fp1);
 
-    //fclose(fp); // closing
+    // fclose(fp); // closing
     fclose(fp1);
     fclose(fp2);
 }
@@ -555,26 +555,30 @@ void searc()
 {
     printf("---------------------");
     printf("\n--Search for a Book--");
-    printf("Enter the idno to search for a book");
-    scanf("%d", &search);
-    foundb = 0;
-    while (fread(&b2, sizeof(struct book), 1, fp)) // if quantity of book is 0
+    printf("\n1. by Book name");
+    printf("\n2. by Author name");
+    printf("\n3. by Book no");
+    printf("\n4. exit");
+    printf("\nEnter your choice : ");
+    scanf("%d", &sr);
+    switch (sr)
     {
-        if (search == b2.bno)
-        {
-            foundb = 1;
-            if (b2.quant == 0)
-            {
-                printf("#No Books available");
-            }
-            break;
-        }
+    case 1:
+        searchbybookname();
+        break;
+    case 2:
+        searchbyauthorname();
+        break;
+    case 3:
+        searchbybookno();
+        break;
+    case 4:
+        end();
+        break;
+    default:
+        printf("\n>>>>>wrong choice");
     }
-
-    if (foundb == 0)
-    {
-        printf("--book not found to issue--");
-    }
+    
 }
 void dispstud()
 {
@@ -623,4 +627,83 @@ void end()
     printf("---------------------");
     printf("\n--exiting --");
     exit(0);
+}
+
+void searchbybookname()
+{
+
+    printf("\nenter Book name to search : ");
+    scanf("%s", sea);
+    fp = fopen("book.dat", "rb+");
+    if (fp == NULL)
+        printf("error in opening book");
+    foundb = 0;
+    while (fread(&b, sizeof(struct book), 1, fp))
+    {
+        if (strcmpi(sea, b.name) == 0)
+        {
+            foundb = 1;
+            break;
+        }
+    }
+    if (foundb == 0)
+    {
+        printf("\nBook not Found in Library database");
+    }
+    else
+    {
+        printf("\nBook available in library");
+    }
+}
+
+void searchbyauthorname()
+{
+    printf("\nenter Book author name to search : ");
+    scanf("%s", sea);
+    fp = fopen("book.dat", "rb+");
+    if (fp == NULL)
+        printf("error in opening book");
+    foundb = 0;
+    while (fread(&b, sizeof(struct book), 1, fp))
+
+    {
+        if (strcmpi(sea, b.author) == 0)
+        {
+            foundb = 1;
+            break;
+        }
+    }
+    if (foundb == 0)
+    {
+        printf("\nBook not Found in Library database");
+    }
+    else
+    {
+        printf("\nBook available in library");
+    }
+}
+void searchbybookno()
+{
+    printf("\nenter Book no to search : ");
+    scanf("%d",&no);
+    fp = fopen("book.dat", "rb+");
+    if (fp == NULL)
+        printf("error in opening book");
+    foundb = 0;
+    while (fread(&b, sizeof(struct book), 1, fp))
+    {
+        if (no == b.bno)
+        {
+            foundb = 1;
+            break;
+        }
+    }
+    if (foundb == 0)
+    {
+        printf("\nBook not Found in Library database");
+    }
+    else
+    {
+        printf("\nBook available in library");
+    }
 }
